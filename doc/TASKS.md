@@ -25,21 +25,25 @@
 - Create `.gitignore` with: `.env`, `service_account.json`, `__pycache__/`, `*.pyc`, `.DS_Store`
 - Create `requirements.txt` with initial dependencies:
     ```
-    python-telegram-bot==20.7
+    python-telegram-bot==21.11.1
     openai==1.12.0
     gspread==6.0.2
     google-auth==2.28.0
     python-dotenv==1.0.1
+    httpx==0.27.2
     ```
+    Notes on deviations from the original spec pins:
+    - `python-telegram-bot` bumped from `20.7` → `21.11.1`. 20.7 has a Python 3.13 incompatibility (`Updater.__slots__` regression) that crashes at startup. The API surface used by this project is unchanged across 20.x→21.x.
+    - `httpx==0.27.2` pinned explicitly. PTB 21.x allows `httpx~=0.27` (resolves to 0.28+), but `openai==1.12.0` calls `httpx.Client(proxies=...)` and the `proxies` kwarg was removed in httpx 0.28. 0.27.2 is the intersection that satisfies both.
 - Create `.env.example` as defined in SPEC.md Section 4
 - Create empty `__init__.py` files in `bot/`, `ai/`, `data/`
 
 **Done when:**
 
-- [ ] Directory structure matches SPEC.md exactly
-- [ ] `git init` done, `.gitignore` in place
-- [ ] `pip install -r requirements.txt` runs without errors
-- [ ] No `.env` file committed to git
+- [x] Directory structure matches SPEC.md exactly
+- [x] `git init` done, `.gitignore` in place
+- [x] `pip install -r requirements.txt` runs without errors
+- [x] No `.env` file committed to git
 
 ---
 
@@ -63,9 +67,9 @@ config.ALLOWED_IDS          # set of integers
 
 **Done when:**
 
-- [ ] Running with a complete `.env` loads all values correctly
-- [ ] Running with a missing variable raises `EnvironmentError` with the variable name in the message
-- [ ] `ALLOWED_TELEGRAM_IDS` is parsed into a `set` of `int`
+- [x] Running with a complete `.env` loads all values correctly
+- [x] Running with a missing variable raises `EnvironmentError` with the variable name in the message
+- [x] `ALLOWED_TELEGRAM_IDS` is parsed into a `set` of `int`
 
 ---
 
@@ -83,10 +87,10 @@ config.ALLOWED_IDS          # set of integers
 
 **Done when:**
 
-- [ ] Bot starts without errors (`python main.py`)
-- [ ] `/start` returns correct welcome message
-- [ ] A user ID not in `ALLOWED_IDS` gets no response or `"Access denied"`
-- [ ] An allowed user ID gets the placeholder response for other commands
+- [x] Bot starts without errors (`python main.py`)
+- [x] `/start` returns correct welcome message
+- [x] A user ID not in `ALLOWED_IDS` gets no response or `"Access denied"`
+- [x] An allowed user ID gets the placeholder response for other commands
 
 ---
 
@@ -121,9 +125,9 @@ The prompt must:
 
 **Done when:**
 
-- [ ] Prompt file exists at `prompts/summarize.txt`
-- [ ] Manually pasting the prompt + a sample chat into ChatGPT returns valid JSON matching the schema
-- [ ] Missing fields return `"Not specified"` not `null` or empty string
+- [x] Prompt file exists at `prompts/summarize.txt`
+- [x] Manually pasting the prompt + a sample chat into ChatGPT returns valid JSON matching the schema
+- [x] Missing fields return `"Not specified"` not `null` or empty string
 
 ---
 
@@ -150,9 +154,9 @@ def summarize_chat(raw_chat: str) -> dict:
 
 **Done when:**
 
-- [ ] `summarize_chat("Hi I'm looking for a 1BR near BTS Asok, budget 25k")` returns a valid dict
-- [ ] All keys from the schema are present in the output
-- [ ] Function raises an exception (not returns `None`) on OpenAI failure
+- [x] `summarize_chat("Hi I'm looking for a 1BR near BTS Asok, budget 25k")` returns a valid dict
+- [x] All keys from the schema are present in the output
+- [x] Function raises an exception (not returns `None`) on OpenAI failure
 
 ---
 
@@ -165,10 +169,10 @@ Implement `format_summary(data: dict) -> str` that converts the dict from `summa
 
 **Done when:**
 
-- [ ] Output uses Telegram MarkdownV2 or Markdown (pick one and be consistent)
-- [ ] All fields are displayed with the correct emoji and label
-- [ ] `notes` list renders as bullet points
-- [ ] Empty `notes` does not show the notes section
+- [x] Output uses Telegram MarkdownV2 or Markdown (pick one and be consistent)
+- [x] All fields are displayed with the correct emoji and label
+- [x] `notes` list renders as bullet points
+- [x] Empty `notes` does not show the notes section
 
 ---
 
@@ -189,10 +193,10 @@ Connect the summarize handler to the full pipeline:
 
 **Done when:**
 
-- [ ] `/summarize [chat text]` returns correct formatted summary
-- [ ] `/summarize` with no text returns the usage hint
-- [ ] An OpenAI failure returns the error message — bot does not crash
-- [ ] Typing indicator appears while processing
+- [x] `/summarize [chat text]` returns correct formatted summary
+- [x] `/summarize` with no text returns the usage hint
+- [x] An OpenAI failure returns the error message — bot does not crash
+- [x] Typing indicator appears while processing
 
 ---
 
