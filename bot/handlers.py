@@ -6,9 +6,11 @@ from telegram import Update
 from telegram.constants import ChatAction, ParseMode
 from telegram.ext import ContextTypes
 
+from ai.matcher import match_properties
 from ai.summarizer import summarize_chat
-from bot.formatters import format_summary
+from bot.formatters import format_matches, format_summary
 from config import config
+from data.sheets import get_listings
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +51,8 @@ OPENAI_ERROR = (
     "Please try again in a moment."
 )
 
+SHEETS_ERROR = "Could not load property data. Please contact your administrator."
+
 
 Handler = Callable[[Update, ContextTypes.DEFAULT_TYPE], Awaitable[None]]
 
@@ -78,6 +82,13 @@ def _extract_argument(update: Update) -> str:
     return parts[1].strip() if len(parts) > 1 else ""
 
 
+async def _send_typing(update: Update) -> None:
+    try:
+        await _send_typing(update)
+    except Exception:
+        logger.warning("send_action failed; continuing without typing indicator")
+
+
 @restricted
 async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(WELCOME_MESSAGE)
@@ -97,7 +108,7 @@ async def summarize_handler(
         await update.message.reply_text(SUMMARIZE_USAGE)
         return
 
-    await update.message.chat.send_action(ChatAction.TYPING)
+    await _send_typing(update)
 
     try:
         data = summarize_chat(raw_chat)
@@ -110,4 +121,27 @@ async def summarize_handler(
 
 @restricted
 async def match_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Coming soon")
+    requirement = _extract_argument(update)
+    if not requirement:
+        await update.message.reply_text(MATCH_USAGE)
+        return
+
+    await _send_typing(update)
+
+    try:
+        listings = get_listings()
+    except Exception:
+        logger.exception("get_listings failed")
+        await update.message.reply_text(SHEETS_ERROR)
+        return
+
+    logger.info("loaded %d available listings", len(listings))
+
+    try:
+        result = match_properties(requirement, listings)
+        logger.info("matcher returned %d matches", len(result.get("matches") or []))
+        text = format_matches(result, listings)
+        await update.message.reply_text(text, parse_mode=ParseMode.MARKDOWN)
+    except Exception:
+        logger.exception("match_handler failed")
+        await update.message.reply_text(OPENAI_ERROR)

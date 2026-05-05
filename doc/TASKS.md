@@ -228,10 +228,10 @@ def get_listings() -> list[dict]:
 
 **Done when:**
 
-- [ ] `get_listings()` returns a non-empty list when the sheet has data
-- [ ] Rows with `available = FALSE` are excluded from results
-- [ ] Function raises a clear exception if authentication fails or sheet is not found
-- [ ] `price` is returned as a number (int or float), not a string
+- [x] `get_listings()` returns a non-empty list when the sheet has data
+- [x] Rows with `available = FALSE` are excluded from results
+- [x] Function raises a clear exception if authentication fails or sheet is not found
+- [x] `price` is returned as a number (int or float), not a string
 
 ---
 
@@ -266,9 +266,9 @@ The prompt must:
 
 **Done when:**
 
-- [ ] Prompt file exists at `prompts/match.txt`
-- [ ] Manually testing the prompt with sample listings returns valid JSON matching the schema
-- [ ] `reply_message` sounds natural and professional — not robotic
+- [x] Prompt file exists at `prompts/match.txt`
+- [x] Manually testing the prompt with sample listings returns valid JSON matching the schema
+- [x] `reply_message` sounds natural and professional — not robotic
 
 ---
 
@@ -295,9 +295,9 @@ def match_properties(requirement: str, listings: list[dict]) -> dict:
 
 **Done when:**
 
-- [ ] `match_properties("BTS Asok 25k 1BR", listings)` returns a dict with `matches` and `reply_message`
-- [ ] Returned `matches` list contains 1–5 items
-- [ ] Empty `listings` input returns `{"matches": [], "reply_message": "..."}` without calling OpenAI
+- [x] `match_properties("BTS Asok 25k 1BR", listings)` returns a dict with `matches` and `reply_message`
+- [x] Returned `matches` list contains 1–5 items
+- [x] Empty `listings` input returns `{"matches": [], "reply_message": "..."}` without calling OpenAI
 
 ---
 
@@ -316,10 +316,10 @@ Implement `format_matches(data: dict) -> str` that converts the matcher output i
 
 **Done when:**
 
-- [ ] Output matches the format in SPEC.md exactly
-- [ ] Each property is clearly separated
-- [ ] `reply_message` appears after a `---` divider
-- [ ] Empty matches shows the no-results message
+- [x] Output matches the format in SPEC.md exactly
+- [x] Each property is clearly separated
+- [x] `reply_message` appears after a `---` divider
+- [x] Empty matches shows the no-results message
 
 ---
 
@@ -342,10 +342,10 @@ Connect the match handler to the full pipeline:
 
 **Done when:**
 
-- [ ] `/match BTS Asok 25k 1BR` returns ranked properties with reply message
-- [ ] `/match` with no text returns the usage hint
-- [ ] Sheet failure returns the correct error message — bot does not crash
-- [ ] OpenAI failure returns the correct error message — bot does not crash
+- [x] `/match BTS Asok 25k 1BR` returns ranked properties with reply message
+- [x] `/match` with no text returns the usage hint
+- [x] Sheet failure returns the correct error message — bot does not crash
+- [x] OpenAI failure returns the correct error message — bot does not crash
 
 ---
 

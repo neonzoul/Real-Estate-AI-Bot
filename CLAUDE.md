@@ -4,7 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current State
 
-**Day 1 complete.** Bot runs, `/start` and `/help` reply, `/summarize` performs end-to-end OpenAI extraction, `/match` is a `"Coming soon"` placeholder. Day 2 (Google Sheets connector + `/match` wiring) and Day 3 (polish + Railway deploy) remain. Follow the day-by-day plan in [doc/TASKS.md](doc/TASKS.md) and the contracts in [doc/SPEC.md](doc/SPEC.md) and [doc/Schema.md](doc/Schema.md).
+**Days 1–2 complete.** Bot runs end-to-end: `/start` and `/help` reply, `/summarize` performs OpenAI extraction, `/match` reads listings from Google Sheets and returns ranked properties with a copy-paste reply. Day 3 (polish + Railway deploy) remains. Follow the day-by-day plan in [doc/TASKS.md](doc/TASKS.md) and the contracts in [doc/SPEC.md](doc/SPEC.md) and [doc/Schema.md](doc/Schema.md).
+
+### Matcher prompt tuning notes
+
+The match prompt in [prompts/match.txt](prompts/match.txt) was tuned during Day 2 to fix two real failure modes observed in live testing:
+
+1. **Too literal** — the original "Only include properties that are genuinely relevant" rule, combined with strict keyword matching, caused the model to reject every listing for "BTS Asok 25k 1BR" even though Lumpini (On Nut, 24500, 1BR, pet-friendly, parking) was an obvious fit. Loosened to allow nearby BTS stations (~2-3 stops) and ~15% over budget when otherwise strong, while keeping hard constraints (pet policy, room type, parking) firm.
+2. **Hallucination** — the model invented features ("pet-friendly" for a listing where `pet_friendly=false`) and client preferences ("which I know is important to you" for things the client never mentioned). Added explicit rules: only state facts present in the listing JSON, never invent client preferences, no robotic sign-offs like "Your Real Estate Agent".
 
 ### Deviations from spec already in code
 
