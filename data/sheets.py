@@ -49,11 +49,18 @@ def _normalize(row: dict) -> dict:
     return cleaned
 
 
-def get_listings() -> list[dict]:
-    creds = Credentials.from_service_account_file(
+def _credentials() -> Credentials:
+    if config.SERVICE_ACCOUNT_INFO is not None:
+        return Credentials.from_service_account_info(
+            config.SERVICE_ACCOUNT_INFO, scopes=_SCOPES
+        )
+    return Credentials.from_service_account_file(
         config.SERVICE_ACCOUNT_PATH, scopes=_SCOPES
     )
-    client = gspread.authorize(creds)
+
+
+def get_listings() -> list[dict]:
+    client = gspread.authorize(_credentials())
     spreadsheet = client.open_by_key(config.GOOGLE_SHEET_ID)
     worksheet = spreadsheet.worksheet(SHEET_NAME)
     rows = worksheet.get_all_records()

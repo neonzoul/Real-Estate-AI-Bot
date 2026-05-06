@@ -84,7 +84,7 @@ def _extract_argument(update: Update) -> str:
 
 async def _send_typing(update: Update) -> None:
     try:
-        await _send_typing(update)
+        await update.message.chat.send_action(ChatAction.TYPING)
     except Exception:
         logger.warning("send_action failed; continuing without typing indicator")
 

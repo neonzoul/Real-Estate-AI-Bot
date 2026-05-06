@@ -379,8 +379,8 @@ Example:
 
 **Done when:**
 
-- [ ] `/help` returns the full guide
-- [ ] Examples are real and usable
+- [x] `/help` returns the full guide
+- [x] Examples are real and usable
 
 ---
 
@@ -391,10 +391,12 @@ Go through every handler and confirm it follows the error rules in SPEC.md Secti
 
 Checklist:
 
-- [ ] No unhandled exceptions can crash the bot process
-- [ ] Every exception is caught at the handler level
-- [ ] Every caught exception logs the full traceback to console
-- [ ] User always receives a readable message — never a Python error trace
+- [x] No unhandled exceptions can crash the bot process
+- [x] Every exception is caught at the handler level
+- [x] Every caught exception logs the full traceback to console
+- [x] User always receives a readable message — never a Python error trace
+
+Audit findings: a real bug was found and fixed during the audit — `_send_typing` was calling itself (infinite recursion), which the broad `except` was swallowing as `"send_action failed"`. The persistent warning seen during Day 2 testing was the recursion limit being hit, not a network issue. Fix: helper now correctly calls `update.message.chat.send_action(ChatAction.TYPING)`.
 
 ---
 
@@ -411,8 +413,8 @@ Test cases for `/summarize`:
 
 Test cases for `/match`:
 
-- [ ] Requirement that matches 3+ listings → returns top 3–5
-- [ ] Requirement that matches nothing → returns no-results message
+- [x] Requirement that matches 3+ listings → returns top 3–5
+- [x] Requirement that matches nothing → returns no-results message
 - [ ] Very short requirement (e.g., `"Asok 1BR"`) → still returns results
 
 ---
